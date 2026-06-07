@@ -1,0 +1,18 @@
+- route:
+    id: routebe17
+    from:
+      id: fromc83b
+      uri: direct
+      parameters:
+        name: weather
+      steps:
+        - toD:
+            id: toD244c
+            uri: "{{weather.forecast-url}}/v1/forecast?latitude=${variable.lat}&longitude=${variable.lon}&current_weather=true"
+        - setVariable:
+            id: setVariable56a0
+            name: currentTemperature
+            expression:
+              jsonpath:
+                id: jsonpath0094
+                expression: $.current_weather.temperature

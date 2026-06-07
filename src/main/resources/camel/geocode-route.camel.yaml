@@ -1,0 +1,65 @@
+- route:
+    id: route82c9
+    from:
+      id: fromfb63
+      uri: direct
+      parameters:
+        name: geocode
+      steps:
+        - setHeader:
+            id: setHeader8a7c
+            name: city
+            expression:
+              simple:
+                id: simple9273
+                expression: ${body.city}
+        - setHeader:
+            id: setHeadere21e
+            name: CamelHttpMethod
+            expression:
+              constant:
+                id: constantf917
+                expression: GET
+        - setBody:
+            id: setBodyf2bb
+            expression:
+              simple:
+                id: simple2762
+                expression: ${null}
+        - removeHeaders:
+            id: removeHeaders1f33
+            pattern: CamelHttp*
+        - removeHeaders:
+            id: removeHeaderse025
+            pattern: Http*
+        - toD:
+            id: toD5136
+            uri: "{{weather.geocoding-url}}/v1/search?name=${header.city}&count=1"
+        - choice:
+            id: choice25ed
+            when:
+              - id: when313a
+                expression:
+                  jsonpath:
+                    id: jsonpath5d24
+                    expression: "$['$.results[0].length() == 0']"
+                    suppressExceptions: true
+                steps:
+                  - throwException:
+                      id: throwException394a
+                      message: City not found
+                      exceptionType: java.lang.Exception
+        - setVariable:
+            id: setVariable3023
+            name: lat
+            expression:
+              jsonpath:
+                id: jsonpath1792
+                expression: $.results[0].latitude
+        - setVariable:
+            id: setVariable1fcb
+            name: lon
+            expression:
+              jsonpath:
+                id: jsonpath507a
+                expression: $.results[0].longitude

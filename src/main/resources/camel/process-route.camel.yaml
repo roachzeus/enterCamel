@@ -1,0 +1,85 @@
+- rest:
+    id: restb9a9
+    post:
+      - id: postf625
+        path: process
+        to: direct:process
+        consumes: application/json
+        produces: application/json
+- route:
+    id: routead6a
+    from:
+      id: fromacea
+      uri: direct
+      parameters:
+        name: process
+      steps:
+        - unmarshal:
+            id: unmarshal85e3
+            json:
+              id: json20c2
+              unmarshalType: fi.roachzeus.enterCamel.ProcessRequest
+        - bean:
+            id: bean0a76
+            ref: requestValidator
+            method: validate
+        - setVariable:
+            id: setVariable7c8c
+            name: name
+            expression:
+              simple:
+                id: simple4c25
+                expression: ${body.name}
+        - setVariable:
+            id: setVariablece83
+            name: city
+            expression:
+              simple:
+                id: simple477c
+                expression: ${body.city}
+        - setVariable:
+            id: setVariable2db7
+            name: uuid
+            expression:
+              simple:
+                id: simple5f04
+                expression: ${uuid}
+        - setVariable:
+            id: setVariablee129
+            name: timestamp
+            expression:
+              simple:
+                id: simple94aa
+                expression: ${date:now:yyyy-MM-dd'T'HH:mm:ssXXX}
+        - log:
+            id: log7ddd
+            message: |
+              {"uuid":"${variable.uuid}",
+               "timestamp":"${variable.timestamp}",
+               "name":"${variable.name}",
+               "city":"${variable.city}"}
+        - to:
+            id: to6764
+            uri: direct
+            parameters:
+              name: geocode
+        - to:
+            id: toe078
+            uri: direct
+            parameters:
+              name: weather
+        - bean:
+            id: bean24fe
+            ref: responseBuilder
+            method: build
+        - setHeader:
+            id: setHeader79fb
+            name: Content-Type
+            expression:
+              constant:
+                id: constant3d14
+                expression: application/json
+        - marshal:
+            id: marshalc8e7
+            json:
+              id: json4488
